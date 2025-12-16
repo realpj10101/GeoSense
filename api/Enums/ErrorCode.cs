@@ -3,5 +3,6 @@ namespace api.Enums;
 public enum ErrorCode
 {
     IsNotFourPoints,
-    ArePointsSame
+    ArePointsSame,
+    AreSidesApprove
 }
