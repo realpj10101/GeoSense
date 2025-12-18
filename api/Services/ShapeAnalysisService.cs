@@ -110,4 +110,9 @@ public class ShapeAnalysisService : IShapeAnalysisService
     {
         return sides.Min() / sides.Max();
     }
+
+    private static double CheckIsSquare()
+    {
+        throw new NotImplementedException();
+    }
 }
