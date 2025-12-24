@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Security.Cryptography.X509Certificates;
 using api.Enums;
 using api.Helpers;
 using api.Interfaces;
@@ -12,6 +13,7 @@ public class ShapeAnalysisService : IShapeAnalysisService
     {
         List<double> distances = [];
         IEnumerable<double> sides = [];
+        IEnumerable<double> diagonals = [];
 
         if (request.Points.Count != 4)
         {
@@ -41,6 +43,8 @@ public class ShapeAnalysisService : IShapeAnalysisService
 
         sides = SortDistance(distances);
 
+        diagonals = GetDiagonals(distances);
+
         double ratio = CheckRatioOfSides(sides);
 
         if (ratio < 0.8)
@@ -55,6 +59,30 @@ public class ShapeAnalysisService : IShapeAnalysisService
                 )
             );
         }
+
+        double finalSquareScore = CheckIsSquare(sides, diagonals);
+
+        if (finalSquareScore < 0.9 || finalSquareScore > 1.1)
+        {
+            return new(
+                false,
+                Error: new(
+                    ErrorCode.IsRhombus,
+                    "Shape is Rhombus"
+                )
+            );
+        }
+
+        return new(
+            true,
+            new()
+            {
+                ShapeType = "Square",
+                Score = finalSquareScore,
+                Message = "You create square successfully"
+            },
+            null
+        );
     }
 
     // analyze shape do not contains same points
@@ -105,14 +133,25 @@ public class ShapeAnalysisService : IShapeAnalysisService
         return distances.Take(4);
     }
 
+    private static IEnumerable<double> GetDiagonals(List<double> distances)
+    {
+        return distances.TakeLast(2);
+    }
+
     // First rule check ratio of sides 
     private static double CheckRatioOfSides(IEnumerable<double> sides)
     {
         return sides.Min() / sides.Max();
     }
 
-    private static double CheckIsSquare()
+    private static double CheckIsSquare(IEnumerable<double> sides, IEnumerable<double> diagonals)
     {
-        throw new NotImplementedException();
+        double avgSides = sides.Average();
+
+        double avgDiagonals = diagonals.Average();
+
+        double expectedDiagonal = avgSides * Math.Sqrt(2);
+
+        return avgDiagonals / expectedDiagonal;
     }
 }
