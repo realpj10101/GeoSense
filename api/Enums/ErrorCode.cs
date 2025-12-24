@@ -4,5 +4,6 @@ public enum ErrorCode
 {
     IsNotFourPoints,
     ArePointsSame,
-    AreSidesApprove
+    AreSidesApprove,
+    IsRhombus
 }
